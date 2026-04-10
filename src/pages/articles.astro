@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const tabs = [
+  { id: 'all', name: '全部' },
+  { id: 'frontend', name: '前端' },
+  { id: 'backend', name: '后端' },
+  { id: 'ai', name: 'AI' },
+  { id: 'other', name: '其他' },
+];
+
+const articles: any[] = []; // In future: await Astro.glob('../articles/*.md');
+---
+
+<Layout title="SillyCat的文章">
+  <div class="max-w-4xl mx-auto space-y-8" x-data="{ activeTab: 'all' }">
+    <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">文章归档</h1>
+
+    <!-- Tabs Navigation -->
+    <div class="flex space-x-2 border-b border-gray-200 dark:border-gray-800 overflow-x-auto pb-4">
+      {tabs.map((tab) => (
+        <button
+          class="tab-btn px-4 py-2 font-medium text-sm transition-colors rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
+          data-tab={tab.id}
+        >
+          {tab.name}
+        </button>
+      ))}
+    </div>
+
+    <!-- Articles List or Empty State -->
+    <div class="mt-8">
+      {articles.length === 0 ? (
+        <div class="p-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <h3 class="mt-4 text-sm font-medium text-gray-900 dark:text-gray-100">博主正在没日没夜的加班造🚀</h3>
+        </div>
+      ) : (
+        <ul class="space-y-4">
+          <!-- Article List will appear here -->
+        </ul>
+      )}
+    </div>
+  </div>
+
+  <script>
+    // Tab Logic
+    const initTabs = () => {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      let activeTab = 'all';
+
+      const updateUI = () => {
+        tabBtns.forEach(btn => {
+          if (btn.getAttribute('data-tab') === activeTab) {
+            btn.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-900', 'dark:text-white');
+            btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+          } else {
+            btn.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-900', 'dark:text-white');
+            btn.classList.add('text-gray-500', 'dark:text-gray-400');
+          }
+        });
+      };
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeTab = btn.getAttribute('data-tab') || 'all';
+          updateUI();
+          // Filter articles logic here in the future
+        });
+      });
+
+      updateUI();
+    };
+
+    // run init inside view transition or normal load
+    document.addEventListener('DOMContentLoaded', initTabs);
+    // for astro view transitions if used 
+    document.addEventListener('astro:page-load', initTabs);
+  </script>
+</Layout>

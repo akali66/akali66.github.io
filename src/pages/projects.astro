@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Fetch repos at build time
+const username = 'akali66';
+let repos = [];
+try {
+  const res = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`);
+  if (res.ok) {
+    const data = await res.json();
+    // Filter out forks if needed, and sort by stars / updated
+    repos = data.filter((repo: any) => !repo.fork).sort((a: any, b: any) => b.stargazers_count - a.stargazers_count);
+  }
+} catch (error) {
+  console.error("Error fetching github repos:", error);
+}
+---
+
+<Layout title="SillyCat的项目站">
+  <div class="max-w-4xl mx-auto space-y-12">
+    <div class="space-y-4">
+      <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">开源项目</h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        以下是我的 GitHub (<a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline">@{username}</a>) 上的开源项目记录。
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {repos.length === 0 ? (
+        <div class="col-span-full p-12 text-center text-gray-500 border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 shadow-sm">
+          未能获取到项目列表，请稍后再试。
+        </div>
+      ) : (
+        repos.map((repo: any) => (
+          <a href={repo.html_url} target="_blank" rel="noopener mr-noreferrer" class="group flex flex-col justify-between p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+            <div class="space-y-4">
+              <div class="flex items-start justify-between">
+                <div class="flex items-center space-x-3">
+                  <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                  </svg>
+                  <h2 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
+                    {repo.name}
+                  </h2>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                {repo.description || "暂无描述"}
+              </p>
+            </div>
+            
+            <div class="mt-6 flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
+              {repo.language && (
+                <div class="flex items-center space-x-2">
+                  <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span>
+                  <span>{repo.language}</span>
+                </div>
+              )}
+              <div class="flex items-center space-x-1.5">
+                <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span>{repo.stargazers_count}</span>
+              </div>
+              <div class="flex items-center space-x-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                <span>{repo.forks_count}</span>
+              </div>
+            </div>
+          </a>
+        ))
+      )}
+    </div>
+  </div>
+</Layout>
