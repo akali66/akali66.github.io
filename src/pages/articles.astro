@@ -9,7 +9,40 @@ const tabs = [
   { id: 'other', name: '其他' },
 ];
 
-const articles: any[] = []; // In future: await Astro.glob('../articles/*.md');
+const tabIds = new Set(tabs.map((tab) => tab.id));
+const articleModules = Object.values(import.meta.glob('./articles/**/*.md', { eager: true }));
+
+const articles = articleModules
+  .map((entry: any) => {
+    const rawCategory = typeof entry.frontmatter.category === 'string'
+      ? entry.frontmatter.category.toLowerCase()
+      : 'other';
+    const category = tabIds.has(rawCategory) ? rawCategory : 'other';
+    const rawDate = entry.frontmatter.pubDate ?? entry.frontmatter.date ?? null;
+    const date = rawDate ? new Date(rawDate) : null;
+
+    return {
+      title: entry.frontmatter.title ?? '未命名文章',
+      description: entry.frontmatter.description ?? '',
+      url: entry.url ?? '#',
+      category,
+      date: date && !Number.isNaN(date.getTime()) ? date : null,
+    };
+  })
+  .sort((a, b) => {
+    if (a.date && b.date) {
+      return b.date.getTime() - a.date.getTime();
+    }
+    if (a.date) {
+      return -1;
+    }
+    if (b.date) {
+      return 1;
+    }
+    return a.title.localeCompare(b.title, 'zh-CN');
+  });
+
+const tabNameMap = Object.fromEntries(tabs.map((tab) => [tab.id, tab.name]));
 ---
 
 <Layout title="SillyCat的文章">
@@ -38,9 +71,28 @@ const articles: any[] = []; // In future: await Astro.glob('../articles/*.md');
           <h3 class="mt-4 text-sm font-medium text-gray-900 dark:text-gray-100">博主正在没日没夜的加班造🚀</h3>
         </div>
       ) : (
-        <ul class="space-y-4">
-          <!-- Article List will appear here -->
-        </ul>
+        <>
+          <ul class="space-y-4" id="article-list">
+            {articles.map((article) => (
+              <li class="article-item p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/60 shadow-sm hover:shadow-md transition-shadow" data-category={article.category}>
+                <a href={article.url} class="block space-y-3">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{article.title}</h2>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                      {tabNameMap[article.category] ?? '其他'}
+                    </span>
+                  </div>
+                  {article.description && <p class="text-gray-600 dark:text-gray-300">{article.description}</p>}
+                  {article.date && <p class="text-sm text-gray-500 dark:text-gray-400">发布于 {article.date.toLocaleDateString('zh-CN')}</p>}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div id="no-results" class="hidden p-12 mt-6 text-center border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl text-sm text-gray-600 dark:text-gray-300">
+            当前分类下暂无文章
+          </div>
+        </>
       )}
     </div>
   </div>
@@ -49,6 +101,8 @@ const articles: any[] = []; // In future: await Astro.glob('../articles/*.md');
     // Tab Logic
     const initTabs = () => {
       const tabBtns = document.querySelectorAll('.tab-btn');
+      const articleItems = document.querySelectorAll('.article-item');
+      const noResults = document.getElementById('no-results');
       let activeTab = 'all';
 
       const updateUI = () => {
@@ -63,15 +117,47 @@ const articles: any[] = []; // In future: await Astro.glob('../articles/*.md');
         });
       };
 
+      const updateArticleFilter = () => {
+        let visibleCount = 0;
+
+        articleItems.forEach(item => {
+          if (!(item instanceof HTMLElement)) {
+            return;
+          }
+
+          const category = item.getAttribute('data-category');
+          const isVisible = activeTab === 'all' || category === activeTab;
+
+          item.style.display = isVisible ? '' : 'none';
+
+          if (isVisible) {
+            visibleCount += 1;
+          }
+        });
+
+        if (noResults) {
+          noResults.classList.toggle('hidden', visibleCount !== 0);
+        }
+      };
+
       tabBtns.forEach(btn => {
+        if (btn instanceof HTMLElement && btn.dataset.bound === 'true') {
+          return;
+        }
+
+        if (btn instanceof HTMLElement) {
+          btn.dataset.bound = 'true';
+        }
+
         btn.addEventListener('click', () => {
           activeTab = btn.getAttribute('data-tab') || 'all';
           updateUI();
-          // Filter articles logic here in the future
+          updateArticleFilter();
         });
       });
 
       updateUI();
+      updateArticleFilter();
     };
 
     // run init inside view transition or normal load

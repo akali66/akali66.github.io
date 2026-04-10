@@ -1,0 +1,197 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title = '文章' } = Astro.props;
+---
+
+<Layout title={title}>
+  <article class="mx-auto w-full max-w-3xl">
+    <div class="markdown-content">
+      <slot />
+    </div>
+  </article>
+</Layout>
+
+<style is:global>
+  .markdown-content {
+    color: #1f2937;
+    font-size: 1.05rem;
+    line-height: 1.85;
+  }
+
+  .dark .markdown-content {
+    color: #d1d5db;
+  }
+
+  .markdown-content > :first-child {
+    margin-top: 0;
+  }
+
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3,
+  .markdown-content h4 {
+    color: #111827;
+    font-weight: 800;
+    line-height: 1.35;
+    margin-top: 2rem;
+    margin-bottom: 0.9rem;
+    letter-spacing: -0.01em;
+  }
+
+  .dark .markdown-content h1,
+  .dark .markdown-content h2,
+  .dark .markdown-content h3,
+  .dark .markdown-content h4 {
+    color: #f9fafb;
+  }
+
+  .markdown-content h1 {
+    font-size: clamp(1.9rem, 4vw, 2.4rem);
+  }
+
+  .markdown-content h2 {
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    padding-top: 0.2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .dark .markdown-content h2 {
+    border-top-color: #374151;
+  }
+
+  .markdown-content h3 {
+    font-size: clamp(1.2rem, 2.4vw, 1.45rem);
+  }
+
+  .markdown-content p,
+  .markdown-content ul,
+  .markdown-content ol,
+  .markdown-content blockquote,
+  .markdown-content pre,
+  .markdown-content table,
+  .markdown-content hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    padding-left: 1.35rem;
+  }
+
+  .markdown-content ul {
+    list-style: disc;
+  }
+
+  .markdown-content ol {
+    list-style: decimal;
+  }
+
+  .markdown-content li + li {
+    margin-top: 0.5rem;
+  }
+
+  .markdown-content a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .dark .markdown-content a {
+    color: #5eead4;
+  }
+
+  .markdown-content strong {
+    color: #111827;
+    font-weight: 700;
+  }
+
+  .dark .markdown-content strong {
+    color: #f3f4f6;
+  }
+
+  .markdown-content code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    font-size: 0.9em;
+    background: #f3f4f6;
+    border-radius: 6px;
+    padding: 0.15em 0.4em;
+  }
+
+  .dark .markdown-content code {
+    background: #1f2937;
+  }
+
+  .markdown-content pre {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow-x: auto;
+    padding: 1rem;
+    background: #ffffff;
+  }
+
+  .dark .markdown-content pre {
+    border-color: #374151;
+    background: #111827;
+  }
+
+  .markdown-content pre code {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    font-size: 0.88rem;
+  }
+
+  .markdown-content blockquote {
+    border-left: 4px solid #0f766e;
+    padding-left: 1rem;
+    color: #4b5563;
+    font-style: italic;
+  }
+
+  .dark .markdown-content blockquote {
+    color: #9ca3af;
+  }
+
+  .markdown-content hr {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  .dark .markdown-content hr {
+    border-top-color: #374151;
+  }
+
+  .markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.97rem;
+  }
+
+  .markdown-content th,
+  .markdown-content td {
+    border: 1px solid #d1d5db;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+  }
+
+  .dark .markdown-content th,
+  .dark .markdown-content td {
+    border-color: #4b5563;
+  }
+
+  .markdown-content th {
+    background: #f9fafb;
+    font-weight: 700;
+  }
+
+  .dark .markdown-content th {
+    background: #1f2937;
+  }
+</style>
