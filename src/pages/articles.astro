@@ -76,9 +76,9 @@ const tabNameMap = Object.fromEntries(tabs.map((tab) => [tab.id, tab.name]));
             {articles.map((article) => (
               <li class="article-item p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/60 shadow-sm hover:shadow-md transition-shadow" data-category={article.category}>
                 <a href={article.url} class="block space-y-3">
-                  <div class="flex flex-wrap items-center justify-between gap-3">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{article.title}</h2>
-                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <h2 class="min-w-0 flex-1 text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-2 break-words" title={article.title}>{article.title}</h2>
+                    <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
                       {tabNameMap[article.category] ?? '其他'}
                     </span>
                   </div>
