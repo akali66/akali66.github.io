@@ -7,6 +7,9 @@ on:
     branches: [ master ]
   # 允许你在 GitHub 上的 Actions 标签中手动触发此“工作流程”
   workflow_dispatch:
+  # 定时触发，自动刷新构建时拉取的外部数据（如 GitHub 项目列表）
+  schedule:
+    - cron: '17 */12 * * *'
 
 # 允许 job 克隆 repo 并创建一个 page deployment
 permissions:
