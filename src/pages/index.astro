@@ -8,7 +8,7 @@ import Layout from '../layouts/Layout.astro';
     <section class="space-y-6">
       <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">你好，我是 SillyCat</h2>
       <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
-        欢迎来到我的个人小站。在这里我会记录我的学习心得、技术见解，以及那些夜以继日写代码的日子。以下是我的个人主页，希望你能在这里找到有价值的内容。
+        欢迎来到我的个人小站。在这里我会记录我的学习心得、技术见解。以下是我的个人主页，希望你能在这里找到有价值的内容。
       </p>
       <div class="flex flex-wrap gap-4">
         <a href="/articles" class="px-6 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition font-medium backdrop-blur-sm">
@@ -25,7 +25,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="aspect-w-16 aspect-h-9 w-full bg-gray-200 dark:bg-gray-800 relative bg-cover bg-center h-100" style="background-image: url('/picture1.jpg');">
         <!-- Fallback if picture1.jpg does not exist -->
         <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900 w-full h-full text-gray-400 dark:text-gray-500 font-mono" id="img-fallback">
-          Minimalist Line Art Picture (picture1.jpg)
+          这里是一张图，但是卡了还没加载出来~
         </div>
         <img src="/picture1.jpg" alt="Decorative Cover" class="w-full h-full object-cover z-10 relative opacity-0 transition-opacity duration-500" onload="this.classList.remove('opacity-0'); document.getElementById('img-fallback').style.display='none';" onerror="this.style.display='none';"/>
       </div>
