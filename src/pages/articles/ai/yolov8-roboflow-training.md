@@ -105,7 +105,7 @@ names: ['cat', 'dog', 'rabbit']
 
 使用python编程进行训练：
 
-```bash
+```python
 results = model.train(
         # ================== 基础数据流 ==================
         data='my_dataset/data.yaml',   # 数据集配置文件路径 (务必确认你的路径正确)
