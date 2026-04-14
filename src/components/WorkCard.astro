@@ -1,0 +1,48 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
+  tag: string;
+  lightboxCaption?: string;
+}
+
+const {
+  title,
+  description,
+  imageSrc,
+  imageAlt,
+  tag,
+  lightboxCaption = imageAlt,
+} = Astro.props;
+---
+
+<article class="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+  <div class="relative overflow-hidden">
+    <button
+      type="button"
+      class="block w-full cursor-zoom-in text-left"
+      data-lightbox-src={imageSrc}
+      data-lightbox-alt={imageAlt}
+      data-lightbox-caption={lightboxCaption}
+      aria-label={`查看 ${title} 大图`}
+    >
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        loading="lazy"
+        class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+      <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent px-4 py-3">
+        <span class="inline-block rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-900">{tag}</span>
+      </div>
+    </button>
+  </div>
+  <div class="space-y-2.5 p-5">
+    <h4 class="text-xl font-semibold text-gray-900 dark:text-white">{title}</h4>
+    <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+      {description}
+    </p>
+  </div>
+</article>

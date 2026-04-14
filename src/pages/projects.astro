@@ -15,6 +15,28 @@ type GithubRepo = {
   pushed_at: string;
 };
 
+const githubLanguageColors: Record<string, string> = {
+  Astro: '#ff5a03',
+  Python: '#3572A5',
+  JavaScript: '#f1e05a',
+  TypeScript: '#3178c6',
+  HTML: '#e34c26',
+  CSS: '#563d7c',
+  Vue: '#41b883',
+  Java: '#b07219',
+  C: '#555555',
+  'C++': '#f34b7d',
+  'C#': '#178600',
+  Go: '#00ADD8',
+  Rust: '#dea584',
+  Shell: '#89e051',
+};
+
+const getLanguageColor = (language: string | null): string => {
+  if (!language) return '#6b7280';
+  return githubLanguageColors[language] ?? '#6b7280';
+};
+
 const repoApiUrl = new URL(`https://api.github.com/users/${username}/repos`);
 repoApiUrl.search = new URLSearchParams({
   sort: 'updated',
@@ -73,7 +95,11 @@ try {
             <div class="mt-6 flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
               {repo.language && (
                 <div class="flex items-center space-x-2">
-                  <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></span>
+                  <span
+                    class="w-3 h-3 rounded-full shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                    style={`background-color: ${getLanguageColor(repo.language)};`}
+                    aria-hidden="true"
+                  ></span>
                   <span>{repo.language}</span>
                 </div>
               )}

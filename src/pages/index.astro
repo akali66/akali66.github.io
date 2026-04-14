@@ -1,5 +1,36 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import WorkCard from '../components/WorkCard.astro';
+
+type FeaturedWork = {
+  title: string;
+  description: string;
+  imageSrc: string;
+  imageAlt: string;
+  tag: string;
+  lightboxCaption: string;
+};
+
+const featuredWorks: FeaturedWork[] = [
+  {
+    title: '环保豹设计图',
+    description:
+      '围绕“环保豹”概念做的项目视觉设计，重点强化识别度和传播感，让画面在环保主题下仍然具备活力与冲击力。',
+    imageSrc: '/HBB.png',
+    imageAlt: 'HBB（环保豹）项目设计稿',
+    tag: '品牌视觉 · 环保主题',
+    lightboxCaption: 'HBB（环保豹）项目设计稿',
+  },
+  {
+    title: '智赋诗韵设计图',
+    description:
+      '针对“诗词创作体验”设计的视觉方案，通过更柔和的层次和版式节奏，突出灵感生成与内容表达的氛围。',
+    imageSrc: '/SmartPoem.png',
+    imageAlt: 'SmartPoem（智赋诗韵）项目设计稿',
+    tag: '创意产品 · 诗歌交互',
+    lightboxCaption: 'SmartPoem（智赋诗韵）项目设计稿',
+  },
+];
 ---
 
 <Layout title="欢迎来到我的个人小站">
@@ -34,63 +65,9 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <div class="grid gap-6 md:grid-cols-2">
-        <article class="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-          <div class="relative overflow-hidden">
-            <button
-              type="button"
-              class="block w-full cursor-zoom-in text-left"
-              data-lightbox-src="/HBB.png"
-              data-lightbox-alt="HBB（环保豹）项目设计稿"
-              data-lightbox-caption="HBB（环保豹）项目设计稿"
-              aria-label="查看 HBB 设计稿大图"
-            >
-              <img
-                src="/HBB.png"
-                alt="HBB（环保豹）项目设计稿"
-                loading="lazy"
-                class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent px-4 py-3">
-                <span class="inline-block rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-900">品牌视觉 · 环保主题</span>
-              </div>
-            </button>
-          </div>
-          <div class="space-y-2.5 p-5">
-            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">环保豹设计图</h4>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-              围绕“环保豹”概念做的项目视觉设计，重点强化识别度和传播感，让画面在环保主题下仍然具备活力与冲击力。
-            </p>
-          </div>
-        </article>
-
-        <article class="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-          <div class="relative overflow-hidden">
-            <button
-              type="button"
-              class="block w-full cursor-zoom-in text-left"
-              data-lightbox-src="/SmartPoem.png"
-              data-lightbox-alt="SmartPoem（智赋诗韵）项目设计稿"
-              data-lightbox-caption="SmartPoem（智赋诗韵）项目设计稿"
-              aria-label="查看 SmartPoem 设计稿大图"
-            >
-              <img
-                src="/SmartPoem.png"
-                alt="SmartPoem（智赋诗韵）项目设计稿"
-                loading="lazy"
-                class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent px-4 py-3">
-                <span class="inline-block rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-900">创意产品 · 诗歌交互</span>
-              </div>
-            </button>
-          </div>
-          <div class="space-y-2.5 p-5">
-            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">智赋诗韵设计图</h4>
-            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-              针对“诗词创作体验”设计的视觉方案，通过更柔和的层次和版式节奏，突出灵感生成与内容表达的氛围。
-            </p>
-          </div>
-        </article>
+        {featuredWorks.map((work) => (
+          <WorkCard {...work} />
+        ))}
       </div>
     </section>
 
