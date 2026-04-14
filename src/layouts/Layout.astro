@@ -34,9 +34,9 @@ const { title } = Astro.props;
 		</script>
 		<title>{title}</title>
 	</head>
-	<body class="flex flex-col md:flex-row min-h-screen">
+	<body class="min-h-screen md:flex md:flex-row">
 		<Sidebar />
-		<main class="flex-1 p-6 md:p-12 overflow-auto bg-gray-50 dark:bg-gray-800 transition-colors duration-300 min-h-screen border-l border-gray-200 dark:border-gray-700">
+		<main class="bg-gray-50 p-6 transition-colors duration-300 dark:bg-gray-800 md:flex-1 md:border-l md:p-12 border-gray-200 dark:border-gray-700">
 			<slot />
 		</main>
 	</body>
