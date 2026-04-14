@@ -20,15 +20,142 @@ import Layout from '../layouts/Layout.astro';
       </div>
     </section>
 
-    <!-- Decorative Image Section -->
-    <section class="mt-8 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300 hover:shadow-md">
-      <div class="aspect-w-16 aspect-h-9 w-full bg-gray-200 dark:bg-gray-800 relative bg-cover bg-center h-100" style="background-image: url('/picture1.jpg');">
-        <!-- Fallback if picture1.jpg does not exist -->
-        <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900 w-full h-full text-gray-400 dark:text-gray-500 font-mono" id="img-fallback">
-          这里是一张图，但是卡了还没加载出来~
+    <!-- Featured Works Section -->
+    <section class="space-y-6">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="space-y-2">
+          <p class="text-xs font-semibold tracking-[0.22em] text-gray-500 dark:text-gray-400 uppercase">Featured Works</p>
+          <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">一些作品</h3>
+          <p class="text-sm text-gray-600 dark:text-gray-300 max-w-xl">
+            这里放的是我参与过的一些能展示的作品，记录了从概念到落地的思考与尝试。部分作品存于公司或已经丢失，无法展示，但我会持续更新这个板块，期待未来能展示更多有趣的项目。
+          </p>
         </div>
-        <img src="/picture1.jpg" alt="Decorative Cover" class="w-full h-full object-cover z-10 relative opacity-0 transition-opacity duration-500" onload="this.classList.remove('opacity-0'); document.getElementById('img-fallback').style.display='none';" onerror="this.style.display='none';"/>
+
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-2">
+        <article class="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <div class="relative overflow-hidden">
+            <button
+              type="button"
+              class="block w-full cursor-zoom-in text-left"
+              data-lightbox-src="/HBB.png"
+              data-lightbox-alt="HBB（环保豹）项目设计稿"
+              data-lightbox-caption="HBB（环保豹）项目设计稿"
+              aria-label="查看 HBB 设计稿大图"
+            >
+              <img
+                src="/HBB.png"
+                alt="HBB（环保豹）项目设计稿"
+                loading="lazy"
+                class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent px-4 py-3">
+                <span class="inline-block rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-900">品牌视觉 · 环保主题</span>
+              </div>
+            </button>
+          </div>
+          <div class="space-y-2.5 p-5">
+            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">环保豹设计图</h4>
+            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              围绕“环保豹”概念做的项目视觉设计，重点强化识别度和传播感，让画面在环保主题下仍然具备活力与冲击力。
+            </p>
+          </div>
+        </article>
+
+        <article class="group overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+          <div class="relative overflow-hidden">
+            <button
+              type="button"
+              class="block w-full cursor-zoom-in text-left"
+              data-lightbox-src="/SmartPoem.png"
+              data-lightbox-alt="SmartPoem（智赋诗韵）项目设计稿"
+              data-lightbox-caption="SmartPoem（智赋诗韵）项目设计稿"
+              aria-label="查看 SmartPoem 设计稿大图"
+            >
+              <img
+                src="/SmartPoem.png"
+                alt="SmartPoem（智赋诗韵）项目设计稿"
+                loading="lazy"
+                class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div class="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/55 to-transparent px-4 py-3">
+                <span class="inline-block rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-gray-900">创意产品 · 诗歌交互</span>
+              </div>
+            </button>
+          </div>
+          <div class="space-y-2.5 p-5">
+            <h4 class="text-xl font-semibold text-gray-900 dark:text-white">智赋诗韵设计图</h4>
+            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              针对“诗词创作体验”设计的视觉方案，通过更柔和的层次和版式节奏，突出灵感生成与内容表达的氛围。
+            </p>
+          </div>
+        </article>
       </div>
     </section>
+
+    <div id="work-lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 p-4" aria-hidden="true">
+      <button
+        type="button"
+        id="work-lightbox-close"
+        class="absolute right-4 top-4 rounded-full bg-white/20 px-3 py-1 text-2xl leading-none text-white hover:bg-white/35"
+        aria-label="关闭大图预览"
+      >
+        ×
+      </button>
+      <figure class="w-full max-w-6xl space-y-3">
+        <img id="work-lightbox-image" src="" alt="" class="max-h-[82vh] w-full rounded-xl object-contain" />
+        <figcaption id="work-lightbox-caption" class="text-center text-sm text-white/90"></figcaption>
+      </figure>
+    </div>
   </div>
 </Layout>
+
+<script is:inline>
+  (() => {
+    const lightbox = document.getElementById('work-lightbox');
+    const previewImage = document.getElementById('work-lightbox-image');
+    const caption = document.getElementById('work-lightbox-caption');
+    const closeButton = document.getElementById('work-lightbox-close');
+    const triggers = document.querySelectorAll('[data-lightbox-src]');
+
+    if (!lightbox || !previewImage || !caption || !closeButton || !triggers.length) return;
+
+    const openLightbox = (src, alt, text) => {
+      previewImage.src = src;
+      previewImage.alt = alt;
+      caption.textContent = text;
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeLightbox = () => {
+      lightbox.classList.add('hidden');
+      lightbox.classList.remove('flex');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    };
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const src = trigger.getAttribute('data-lightbox-src');
+        const alt = trigger.getAttribute('data-lightbox-alt') || '';
+        const text = trigger.getAttribute('data-lightbox-caption') || '';
+        if (!src) return;
+        openLightbox(src, alt, text);
+      });
+    });
+
+    closeButton.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && lightbox.classList.contains('flex')) {
+        closeLightbox();
+      }
+    });
+  })();
+</script>
