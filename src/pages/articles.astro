@@ -18,8 +18,11 @@ const catColorMap: Record<string, string> = {
 
 const tabIds = new Set(tabs.map((tab) => tab.id));
 const articleModules = Object.values(import.meta.glob('./articles/**/*.md', { eager: true }));
+const specialModules = Object.values(import.meta.glob('./special_articles/**/*.md', { eager: true }));
 
-const articles = articleModules
+const allModules = [...articleModules, ...specialModules];
+
+const articles = allModules
   .map((entry: any) => {
     const rawCategory = typeof entry.frontmatter.category === 'string'
       ? entry.frontmatter.category.toLowerCase()
@@ -27,6 +30,7 @@ const articles = articleModules
     const category = tabIds.has(rawCategory) ? rawCategory : 'other';
     const rawDate = entry.frontmatter.pubDate ?? entry.frontmatter.date ?? null;
     const date = rawDate ? new Date(rawDate) : null;
+    const isSecret = !!entry.frontmatter.secret;
 
     return {
       title: entry.frontmatter.title ?? '未命名文章',
@@ -34,6 +38,7 @@ const articles = articleModules
       url: entry.url ?? '#',
       category,
       date: date && !Number.isNaN(date.getTime()) ? date : null,
+      secret: isSecret,
     };
   })
   .sort((a, b) => {
@@ -81,7 +86,7 @@ const tabNameMap = Object.fromEntries(tabs.map((tab) => [tab.id, tab.name]));
         <>
           <ul class="space-y-4" id="article-list">
             {articles.map((article) => (
-              <li class="article-item p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/60 shadow-sm hover:shadow-md transition-shadow" data-category={article.category}>
+              <li class="article-item p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/60 shadow-sm hover:shadow-md transition-shadow" data-category={article.category} data-secret={article.secret ? 'true' : 'false'} style={article.secret ? 'display: none' : ''}>
                 <a href={article.url} class="block space-y-3">
                   <div class="flex flex-wrap items-start justify-between gap-3">
                     <h2 class="min-w-0 flex-1 text-xl font-bold text-gray-900 dark:text-gray-100 line-clamp-2 wrap-break-word" title={article.title}>{article.title}</h2>
@@ -126,6 +131,7 @@ const tabNameMap = Object.fromEntries(tabs.map((tab) => [tab.id, tab.name]));
 
       const updateArticleFilter = () => {
         let visibleCount = 0;
+        const isSpecialMode = localStorage.getItem('sillycat_special_mode') === 'true';
 
         articleItems.forEach(item => {
           if (!(item instanceof HTMLElement)) {
@@ -133,6 +139,13 @@ const tabNameMap = Object.fromEntries(tabs.map((tab) => [tab.id, tab.name]));
           }
 
           const category = item.getAttribute('data-category');
+          const isSecret = item.getAttribute('data-secret') === 'true';
+          
+          if (isSecret && !isSpecialMode) {
+            item.style.display = 'none';
+            return;
+          }
+
           const isVisible = activeTab === 'all' || category === activeTab;
 
           item.style.display = isVisible ? '' : 'none';
