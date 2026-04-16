@@ -9,9 +9,568 @@ const { title = '文章' } = Astro.props;
 ---
 
 <Layout title={title}>
-  <article class="mx-auto w-full max-w-4xl">
-    <div class="prose prose-gray max-w-none prose-headings:font-extrabold prose-a:text-teal-700 hover:prose-a:text-teal-600 prose-code:before:content-none prose-code:after:content-none dark:prose-invert dark:prose-a:text-teal-300">
-      <slot />
-    </div>
-  </article>
+  <section class="article-layout mx-auto flex w-full max-w-360 items-start justify-center gap-8">
+    <article class="article-content w-full max-w-4xl">
+      <div data-article-content class="prose prose-gray max-w-none prose-headings:font-extrabold prose-a:text-teal-700 hover:prose-a:text-teal-600 prose-code:before:content-none prose-code:after:content-none dark:prose-invert dark:prose-a:text-teal-300">
+        <slot />
+      </div>
+    </article>
+
+    <button class="toc-fab" type="button" aria-controls="article-toc" aria-expanded="false">
+      目录
+    </button>
+
+    <div class="toc-mobile-backdrop" data-open="false" hidden aria-hidden="true"></div>
+
+    <aside class="toc-shell" data-open="true" aria-label="文章目录">
+      <button class="toc-toggle" type="button" aria-expanded="true" aria-controls="article-toc">
+        <span class="toc-toggle-icon" aria-hidden="true">›</span>
+        <span class="toc-toggle-label">收起目录</span>
+      </button>
+      <nav id="article-toc" class="toc-nav" aria-label="文章目录导航">
+        <p class="toc-empty">正在生成目录...</p>
+      </nav>
+    </aside>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const articleRoot = document.querySelector('[data-article-content]');
+      const tocShell = document.querySelector('.toc-shell');
+      const tocNav = document.getElementById('article-toc');
+      const toggleButton = tocShell?.querySelector('.toc-toggle');
+      const toggleLabel = tocShell?.querySelector('.toc-toggle-label');
+      const tocFab = document.querySelector('.toc-fab');
+      const mobileBackdrop = document.querySelector('.toc-mobile-backdrop');
+      const mobileQuery = window.matchMedia('(max-width: 1023px)');
+
+      if (!articleRoot || !tocShell || !tocNav || !toggleButton || !toggleLabel) {
+        return;
+      }
+
+      const getDesktopPreference = () => {
+        const saved = window.localStorage.getItem('article-toc-open');
+        return saved == null ? true : saved === '1';
+      };
+
+      const slugify = (value) => {
+        const normalized = value
+          .trim()
+          .toLowerCase()
+          .replace(/[\s]+/g, '-')
+          .replace(/[^\p{Letter}\p{Number}-]/gu, '')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '');
+        return normalized;
+      };
+
+      let headings = Array.from(articleRoot.querySelectorAll('h2, h3, h4'));
+      if (headings.length === 0) {
+        headings = Array.from(articleRoot.querySelectorAll('h1'));
+      }
+
+      if (headings.length === 0) {
+        tocNav.innerHTML = '<p class="toc-empty">本文没有可索引的小节。</p>';
+        toggleButton.disabled = true;
+        toggleButton.setAttribute('aria-disabled', 'true');
+        if (tocFab instanceof HTMLButtonElement) {
+          tocFab.hidden = true;
+        }
+        if (mobileBackdrop instanceof HTMLDivElement) {
+          mobileBackdrop.hidden = true;
+          mobileBackdrop.dataset.open = 'false';
+        }
+        return;
+      }
+
+      const allIds = new Set(
+        Array.from(document.querySelectorAll('[id]'))
+          .map((element) => element.id)
+          .filter(Boolean)
+      );
+
+      const minLevel = headings.reduce((smallest, heading) => {
+        const current = Number(heading.tagName.slice(1));
+        return current < smallest ? current : smallest;
+      }, 6);
+
+      const tocList = document.createElement('ul');
+      tocList.className = 'toc-list';
+
+      const entries = headings.map((heading, index) => {
+        const fallbackId = `section-${index + 1}`;
+        const baseId = heading.id || slugify(heading.textContent || '') || fallbackId;
+        let nextId = baseId;
+        let duplicateCounter = 2;
+
+        while (allIds.has(nextId)) {
+          if (nextId === heading.id) {
+            break;
+          }
+          nextId = `${baseId}-${duplicateCounter}`;
+          duplicateCounter += 1;
+        }
+
+        if (!heading.id) {
+          heading.id = nextId;
+        }
+        allIds.add(heading.id);
+
+        const level = Number(heading.tagName.slice(1));
+        const indentLevel = Math.max(level - minLevel, 0);
+
+        const listItem = document.createElement('li');
+        listItem.className = 'toc-item';
+        listItem.style.setProperty('--toc-indent', `${indentLevel * 0.85}rem`);
+
+        const link = document.createElement('a');
+        link.className = 'toc-link';
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent?.trim() || `小节 ${index + 1}`;
+
+        listItem.append(link);
+        tocList.append(listItem);
+
+        return { heading, link };
+      });
+
+      tocNav.replaceChildren(tocList);
+
+      const setOpenState = (isOpen, options = {}) => {
+        const { persistDesktop = true } = options;
+        const isMobile = mobileQuery.matches;
+
+        tocShell.dataset.open = isOpen ? 'true' : 'false';
+        toggleButton.setAttribute('aria-expanded', String(isOpen));
+
+        if (tocFab instanceof HTMLButtonElement) {
+          tocFab.setAttribute('aria-expanded', String(isOpen));
+        }
+
+        if (isMobile) {
+          toggleLabel.textContent = isOpen ? '关闭目录' : '目录';
+          if (mobileBackdrop instanceof HTMLDivElement) {
+            mobileBackdrop.dataset.open = isOpen ? 'true' : 'false';
+            mobileBackdrop.hidden = !isOpen;
+          }
+          document.body.classList.toggle('toc-mobile-open', isOpen);
+          return;
+        }
+
+        toggleLabel.textContent = isOpen ? '收起目录' : '展开目录';
+
+        if (mobileBackdrop instanceof HTMLDivElement) {
+          mobileBackdrop.dataset.open = 'false';
+          mobileBackdrop.hidden = true;
+        }
+
+        document.body.classList.remove('toc-mobile-open');
+
+        if (persistDesktop) {
+          window.localStorage.setItem('article-toc-open', isOpen ? '1' : '0');
+        }
+      };
+
+      if (mobileQuery.matches) {
+        setOpenState(false, { persistDesktop: false });
+      } else {
+        setOpenState(getDesktopPreference(), { persistDesktop: false });
+      }
+
+      toggleButton.addEventListener('click', () => {
+        setOpenState(tocShell.dataset.open !== 'true');
+      });
+
+      if (tocFab instanceof HTMLButtonElement) {
+        tocFab.addEventListener('click', () => {
+          setOpenState(true, { persistDesktop: false });
+        });
+      }
+
+      if (mobileBackdrop instanceof HTMLDivElement) {
+        mobileBackdrop.addEventListener('click', () => {
+          setOpenState(false, { persistDesktop: false });
+        });
+      }
+
+      const setActiveLink = (activeId) => {
+        entries.forEach(({ link }) => {
+          const isActive = link.getAttribute('href') === `#${activeId}`;
+          link.classList.toggle('is-active', isActive);
+        });
+      };
+
+      setActiveLink(entries[0].heading.id);
+
+      const observer = new IntersectionObserver(
+        (intersections) => {
+          const visible = intersections
+            .filter((item) => item.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+          if (visible[0]) {
+            setActiveLink(visible[0].target.id);
+          }
+        },
+        {
+          rootMargin: '-20% 0px -65% 0px',
+          threshold: [0, 1],
+        }
+      );
+
+      entries.forEach(({ heading }) => observer.observe(heading));
+
+      tocNav.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) {
+          return;
+        }
+
+        const anchor = event.target.closest('a');
+        if (!anchor) {
+          return;
+        }
+
+        if (mobileQuery.matches) {
+          setOpenState(false, { persistDesktop: false });
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileQuery.matches && tocShell.dataset.open === 'true') {
+          setOpenState(false, { persistDesktop: false });
+        }
+      });
+
+      const handleViewportChange = () => {
+        if (mobileQuery.matches) {
+          setOpenState(false, { persistDesktop: false });
+          return;
+        }
+
+        setOpenState(getDesktopPreference(), { persistDesktop: false });
+      };
+
+      if (typeof mobileQuery.addEventListener === 'function') {
+        mobileQuery.addEventListener('change', handleViewportChange);
+      } else if (typeof mobileQuery.addListener === 'function') {
+        mobileQuery.addListener(handleViewportChange);
+      }
+    })();
+  </script>
+
+  <style>
+    .article-content {
+      min-width: 0;
+    }
+
+    .toc-fab {
+      display: none;
+    }
+
+    .toc-mobile-backdrop {
+      display: none;
+    }
+
+    .toc-shell {
+      position: sticky;
+      top: 5rem;
+      width: 18.75rem;
+      max-height: calc(100vh - 6rem);
+      align-self: flex-start;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border-radius: 0.95rem;
+      border: 1px solid rgb(209 213 219 / 0.85);
+      background: linear-gradient(165deg, rgb(255 255 255 / 0.95) 0%, rgb(249 250 251 / 0.88) 100%);
+      box-shadow: 0 16px 36px rgb(15 23 42 / 0.1);
+      backdrop-filter: blur(12px);
+      transition: width 0.26s ease, box-shadow 0.26s ease, border-color 0.26s ease;
+      z-index: 20;
+    }
+
+    :global(.dark) .toc-shell {
+      border-color: rgb(75 85 99 / 0.75);
+      background: linear-gradient(165deg, rgb(17 24 39 / 0.93) 0%, rgb(15 23 42 / 0.86) 100%);
+      box-shadow: 0 18px 36px rgb(0 0 0 / 0.36);
+    }
+
+    .toc-shell[data-open='false'] {
+      width: 3.85rem;
+    }
+
+    .toc-toggle {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.52rem;
+      border: none;
+      border-bottom: 1px solid rgb(209 213 219 / 0.9);
+      background: transparent;
+      color: inherit;
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 0.78rem 0.72rem;
+      cursor: pointer;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    :global(.dark) .toc-toggle {
+      border-bottom-color: rgb(75 85 99 / 0.8);
+    }
+
+    .toc-toggle:hover {
+      background: rgb(20 184 166 / 0.08);
+    }
+
+    :global(.dark) .toc-toggle:hover {
+      background: rgb(20 184 166 / 0.14);
+    }
+
+    .toc-toggle-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.72rem;
+      height: 1.72rem;
+      border-radius: 999px;
+      background: rgb(15 118 110 / 0.12);
+      color: rgb(15 118 110);
+      font-size: 1.02rem;
+      transform: rotate(180deg);
+      transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    :global(.dark) .toc-toggle-icon {
+      background: rgb(94 234 212 / 0.18);
+      color: rgb(153 246 228);
+    }
+
+    .toc-shell[data-open='false'] .toc-toggle-icon {
+      transform: rotate(0deg);
+    }
+
+    .toc-toggle-label {
+      white-space: nowrap;
+      max-width: 9rem;
+      opacity: 1;
+      overflow: hidden;
+      transition: max-width 0.2s ease, opacity 0.2s ease;
+    }
+
+    .toc-toggle:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .toc-shell[data-open='false'] .toc-toggle {
+      justify-content: center;
+      padding-inline: 0.55rem;
+      border-bottom: none;
+    }
+
+    .toc-shell[data-open='false'] .toc-toggle-label {
+      max-width: 0;
+      opacity: 0;
+    }
+
+    .toc-nav {
+      max-height: calc(100vh - 10rem);
+      overflow: auto;
+      padding: 0.56rem 0.62rem 0.85rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+    }
+
+    .toc-shell[data-open='false'] .toc-nav {
+      display: none;
+    }
+
+    .toc-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+    }
+
+    .toc-item {
+      margin: 0;
+    }
+
+    .toc-link {
+      display: block;
+      border-radius: 0.56rem;
+      color: rgb(75 85 99);
+      font-size: 0.88rem;
+      line-height: 1.35;
+      text-decoration: none;
+      padding: 0.42rem 0.46rem 0.42rem calc(0.46rem + var(--toc-indent, 0rem));
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+
+    :global(.dark) .toc-link {
+      color: rgb(203 213 225);
+    }
+
+    .toc-link:hover {
+      background: rgb(45 212 191 / 0.17);
+      color: rgb(15 118 110);
+      transform: translateX(2px);
+    }
+
+    :global(.dark) .toc-link:hover {
+      background: rgb(20 184 166 / 0.2);
+      color: rgb(153 246 228);
+    }
+
+    .toc-link.is-active {
+      background: rgb(20 184 166 / 0.2);
+      color: rgb(17 94 89);
+      font-weight: 600;
+      border-left-color: rgb(13 148 136);
+    }
+
+    :global(.dark) .toc-link.is-active {
+      background: rgb(20 184 166 / 0.26);
+      color: rgb(204 251 241);
+      border-left-color: rgb(94 234 212);
+    }
+
+    .toc-empty {
+      margin: 0.35rem 0.45rem;
+      color: rgb(107 114 128);
+      font-size: 0.84rem;
+    }
+
+    :global(.dark) .toc-empty {
+      color: rgb(156 163 175);
+    }
+
+    [data-article-content] :is(h1, h2, h3, h4, h5, h6) {
+      scroll-margin-top: 5.5rem;
+    }
+
+    :global(body.toc-mobile-open) {
+      overflow: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .toc-shell,
+      .toc-toggle,
+      .toc-toggle-icon,
+      .toc-toggle-label,
+      .toc-link,
+      .toc-fab,
+      .toc-mobile-backdrop {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .article-layout {
+        display: block;
+      }
+
+      .toc-fab {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.85rem;
+        min-width: 2.85rem;
+        border: none;
+        border-radius: 999px;
+        padding: 0 1rem;
+        background: rgb(15 118 110);
+        color: rgb(240 253 250);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        box-shadow: 0 16px 28px rgb(15 118 110 / 0.32);
+        z-index: 52;
+        cursor: pointer;
+        transition: transform 0.22s ease, opacity 0.22s ease;
+      }
+
+      .toc-fab[aria-expanded='true'] {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+        pointer-events: none;
+      }
+
+      :global(.dark) .toc-fab {
+        background: rgb(13 148 136);
+        color: rgb(236 254 255);
+      }
+
+      .toc-mobile-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgb(15 23 42 / 0.42);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.24s ease;
+        z-index: 50;
+      }
+
+      .toc-mobile-backdrop[data-open='true'] {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .toc-shell {
+        position: fixed;
+        left: 0.75rem;
+        right: 0.75rem;
+        bottom: 0.75rem;
+        top: auto;
+        width: auto;
+        max-height: min(75vh, 34rem);
+        z-index: 55;
+        transform: translateY(calc(100% + 1rem));
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.26s ease, opacity 0.26s ease;
+      }
+
+      .toc-shell[data-open='false'] {
+        width: auto;
+      }
+
+      .toc-shell[data-open='true'] {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .toc-shell[data-open='false'] .toc-toggle {
+        justify-content: flex-start;
+        border-bottom: 1px solid rgb(209 213 219 / 0.9);
+        padding-inline: 0.72rem;
+      }
+
+      :global(.dark) .toc-shell[data-open='false'] .toc-toggle {
+        border-bottom-color: rgb(75 85 99 / 0.8);
+      }
+
+      .toc-shell[data-open='false'] .toc-toggle-label {
+        max-width: 9rem;
+        opacity: 1;
+      }
+
+      .toc-nav {
+        max-height: min(calc(75vh - 3.35rem), 28rem);
+      }
+    }
+  </style>
 </Layout>

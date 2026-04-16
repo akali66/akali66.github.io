@@ -210,7 +210,6 @@ const isActive = (href: string) =>
       trigger.addEventListener('click', (e) => {
         e.preventDefault();
         clickCount++;
-        console.log(`SillyCat trigger clicked ${clickCount} time(s)`);
         
         if (clickTimer) clearTimeout(clickTimer);
         
