@@ -10,25 +10,25 @@ const { title = '文章' } = Astro.props;
 
 <Layout title={title}>
   <section class="article-layout mx-auto flex w-full max-w-360 items-start justify-center gap-8">
-    <article class="article-content w-full max-w-4xl">
-      <div data-article-content class="prose prose-gray max-w-none prose-headings:font-extrabold prose-a:text-teal-700 hover:prose-a:text-teal-600 prose-code:before:content-none prose-code:after:content-none dark:prose-invert dark:prose-a:text-teal-300">
+    <article class="article-content min-w-0 w-full max-w-4xl">
+      <div data-article-content class="prose prose-gray max-w-none prose-headings:font-extrabold prose-headings:scroll-mt-22 prose-a:text-teal-700 hover:prose-a:text-teal-600 prose-code:before:content-none prose-code:after:content-none dark:prose-invert dark:prose-a:text-teal-300">
         <slot />
       </div>
     </article>
 
-    <button class="toc-fab" type="button" aria-controls="article-toc" aria-expanded="false">
+    <button class="toc-fab fixed right-4 bottom-4 z-52 hidden h-[2.85rem] min-w-[2.85rem] items-center justify-center rounded-full bg-teal-700 px-4 text-[0.9rem] font-bold tracking-[0.03em] text-teal-50 shadow-[0_16px_28px_rgb(15_118_110/0.32)] transition-[transform,opacity] duration-200 motion-reduce:transition-none dark:bg-teal-600 dark:text-cyan-50 max-lg:inline-flex aria-expanded:pointer-events-none aria-expanded:translate-y-2.5 aria-expanded:scale-95 aria-expanded:opacity-0" type="button" aria-controls="article-toc" aria-expanded="false">
       目录
     </button>
 
-    <div class="toc-mobile-backdrop" data-open="false" hidden aria-hidden="true"></div>
+    <div class="toc-mobile-backdrop fixed inset-0 z-50 hidden bg-slate-900/42 opacity-0 pointer-events-none transition-opacity duration-200 motion-reduce:transition-none max-lg:block data-[open=true]:opacity-100 data-[open=true]:pointer-events-auto" data-open="false" hidden aria-hidden="true"></div>
 
-    <aside class="toc-shell" data-open="true" aria-label="文章目录">
-      <button class="toc-toggle" type="button" aria-expanded="true" aria-controls="article-toc">
-        <span class="toc-toggle-icon" aria-hidden="true">›</span>
-        <span class="toc-toggle-label">收起目录</span>
+    <aside class="toc-shell group/toc sticky top-20 z-20 flex max-h-[calc(100vh-6rem)] w-75 self-start flex-col overflow-hidden rounded-2xl border border-gray-300/85 bg-linear-to-br from-white/95 to-gray-50/88 shadow-[0_16px_36px_rgb(15_23_42/0.10)] backdrop-blur-xl transition-[width,box-shadow,border-color,background-color,transform,opacity] duration-300 motion-reduce:transition-none dark:border-gray-600/75 dark:from-gray-900/93 dark:to-slate-900/86 dark:shadow-[0_18px_36px_rgb(0_0_0/0.36)] lg:data-[open=false]:w-[3.4rem] lg:data-[open=false]:rounded-2xl lg:data-[open=false]:border-slate-400/60 lg:data-[open=false]:bg-white/95 lg:data-[open=false]:shadow-[0_12px_26px_rgb(15_23_42/0.16)] dark:lg:data-[open=false]:border-slate-500/70 dark:lg:data-[open=false]:bg-slate-900/93 dark:lg:data-[open=false]:shadow-[0_16px_26px_rgb(0_0_0/0.40)] max-lg:fixed max-lg:inset-x-3 max-lg:bottom-3 max-lg:top-auto max-lg:w-auto max-lg:max-h-[min(75vh,34rem)] max-lg:z-55 max-lg:translate-y-[calc(100%+1rem)] max-lg:opacity-0 max-lg:pointer-events-none max-lg:data-[open=true]:translate-y-0 max-lg:data-[open=true]:opacity-100 max-lg:data-[open=true]:pointer-events-auto" data-open="true" aria-label="文章目录">
+      <button class="toc-toggle flex w-full items-center justify-start gap-2 border-b border-gray-300/90 bg-transparent px-3 py-[0.78rem] text-[0.86rem] font-bold tracking-[0.02em] transition-colors duration-200 hover:bg-teal-500/10 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none dark:border-gray-600/80 dark:hover:bg-teal-500/15 lg:group-data-[open=false]/toc:min-h-[3.4rem] lg:group-data-[open=false]/toc:justify-center lg:group-data-[open=false]/toc:border-b-0 lg:group-data-[open=false]/toc:px-[0.55rem]" type="button" aria-expanded="true" aria-controls="article-toc">
+        <span class="toc-toggle-icon inline-flex h-[1.72rem] w-[1.72rem] shrink-0 items-center justify-center rounded-full bg-teal-700/12 text-[1.02rem] leading-none text-teal-700 transition-[transform,background-color,color] duration-200 motion-reduce:transition-none dark:bg-teal-300/20 dark:text-teal-200 rotate-180 group-data-[open=false]/toc:rotate-0" aria-hidden="true">›</span>
+        <span class="toc-toggle-label max-w-36 overflow-hidden whitespace-nowrap opacity-100 transition-[max-width,opacity] duration-200 motion-reduce:transition-none lg:group-data-[open=false]/toc:max-w-0 lg:group-data-[open=false]/toc:opacity-0">收起目录</span>
       </button>
-      <nav id="article-toc" class="toc-nav" aria-label="文章目录导航">
-        <p class="toc-empty">正在生成目录...</p>
+      <nav id="article-toc" class="toc-nav max-h-[calc(100vh-10rem)] overflow-auto px-2.5 pt-2 pb-3.5 lg:group-data-[open=false]/toc:hidden max-lg:max-h-[min(calc(75vh-3.35rem),28rem)]" aria-label="文章目录导航">
+        <p class="toc-empty mx-2 my-1.5 text-sm text-gray-500 dark:text-gray-400">正在生成目录...</p>
       </nav>
     </aside>
   </section>
@@ -64,13 +64,29 @@ const { title = '文章' } = Astro.props;
         return normalized;
       };
 
+      const getHashId = (value) => {
+        const raw = (value || '').replace(/^#/, '');
+        if (!raw) {
+          return '';
+        }
+
+        try {
+          return decodeURIComponent(raw);
+        } catch {
+          return raw;
+        }
+      };
+
       let headings = Array.from(articleRoot.querySelectorAll('h2, h3, h4'));
       if (headings.length === 0) {
         headings = Array.from(articleRoot.querySelectorAll('h1'));
       }
 
       if (headings.length === 0) {
-        tocNav.innerHTML = '<p class="toc-empty">本文没有可索引的小节。</p>';
+        const emptyMessage = document.createElement('p');
+        emptyMessage.className = 'mx-2 my-1.5 text-sm text-gray-500 dark:text-gray-400';
+        emptyMessage.textContent = '本文没有可索引的小节。';
+        tocNav.replaceChildren(emptyMessage);
         toggleButton.disabled = true;
         toggleButton.setAttribute('aria-disabled', 'true');
         if (tocFab instanceof HTMLButtonElement) {
@@ -82,6 +98,11 @@ const { title = '文章' } = Astro.props;
         }
         return;
       }
+
+      const tocListClassName = 'm-0 flex list-none flex-col gap-1 p-0';
+      const tocItemClassName = 'm-0 min-w-0';
+      const tocLinkClassName =
+        'block truncate rounded-md border-l-[3px] border-l-transparent px-2.5 py-1.5 text-[0.88rem] font-medium leading-[1.38] text-gray-600 no-underline transition-[background-color,color,transform,border-color] duration-200 hover:translate-x-px hover:border-l-teal-700 hover:bg-teal-400/25 hover:text-teal-700 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-500 motion-reduce:transition-none dark:text-slate-300 dark:hover:border-l-teal-300 dark:hover:bg-teal-400/30 dark:hover:text-teal-100 [&.is-active]:border-l-teal-600 [&.is-active]:bg-teal-400/30 [&.is-active]:font-bold [&.is-active]:text-teal-900 dark:[&.is-active]:border-l-teal-300 dark:[&.is-active]:bg-teal-400/25 dark:[&.is-active]:text-teal-100';
 
       const allIds = new Set(
         Array.from(document.querySelectorAll('[id]'))
@@ -95,7 +116,7 @@ const { title = '文章' } = Astro.props;
       }, 6);
 
       const tocList = document.createElement('ul');
-      tocList.className = 'toc-list';
+      tocList.className = tocListClassName;
 
       const entries = headings.map((heading, index) => {
         const fallbackId = `section-${index + 1}`;
@@ -120,13 +141,14 @@ const { title = '文章' } = Astro.props;
         const indentLevel = Math.max(level - minLevel, 0);
 
         const listItem = document.createElement('li');
-        listItem.className = 'toc-item';
-        listItem.style.setProperty('--toc-indent', `${indentLevel * 0.85}rem`);
+        listItem.className = tocItemClassName;
+        listItem.style.marginLeft = `${indentLevel * 0.85}rem`;
 
         const link = document.createElement('a');
-        link.className = 'toc-link';
+        link.className = tocLinkClassName;
         link.href = `#${heading.id}`;
         link.textContent = heading.textContent?.trim() || `小节 ${index + 1}`;
+        link.title = link.textContent;
 
         listItem.append(link);
         tocList.append(listItem);
@@ -153,7 +175,7 @@ const { title = '文章' } = Astro.props;
             mobileBackdrop.dataset.open = isOpen ? 'true' : 'false';
             mobileBackdrop.hidden = !isOpen;
           }
-          document.body.classList.toggle('toc-mobile-open', isOpen);
+          document.body.classList.toggle('overflow-hidden', isOpen);
           return;
         }
 
@@ -164,7 +186,7 @@ const { title = '文章' } = Astro.props;
           mobileBackdrop.hidden = true;
         }
 
-        document.body.classList.remove('toc-mobile-open');
+        document.body.classList.remove('overflow-hidden');
 
         if (persistDesktop) {
           window.localStorage.setItem('article-toc-open', isOpen ? '1' : '0');
@@ -200,7 +222,8 @@ const { title = '文章' } = Astro.props;
         });
       };
 
-      setActiveLink(entries[0].heading.id);
+      const initialHash = getHashId(window.location.hash);
+      setActiveLink(initialHash || entries[0].heading.id);
 
       const observer = new IntersectionObserver(
         (intersections) => {
@@ -230,8 +253,20 @@ const { title = '文章' } = Astro.props;
           return;
         }
 
+        const hashId = getHashId(anchor.hash);
+        if (hashId) {
+          setActiveLink(hashId);
+        }
+
         if (mobileQuery.matches) {
           setOpenState(false, { persistDesktop: false });
+        }
+      });
+
+      window.addEventListener('hashchange', () => {
+        const hashId = getHashId(window.location.hash);
+        if (hashId) {
+          setActiveLink(hashId);
         }
       });
 
@@ -258,319 +293,4 @@ const { title = '文章' } = Astro.props;
     })();
   </script>
 
-  <style>
-    .article-content {
-      min-width: 0;
-    }
-
-    .toc-fab {
-      display: none;
-    }
-
-    .toc-mobile-backdrop {
-      display: none;
-    }
-
-    .toc-shell {
-      position: sticky;
-      top: 5rem;
-      width: 18.75rem;
-      max-height: calc(100vh - 6rem);
-      align-self: flex-start;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      border-radius: 0.95rem;
-      border: 1px solid rgb(209 213 219 / 0.85);
-      background: linear-gradient(165deg, rgb(255 255 255 / 0.95) 0%, rgb(249 250 251 / 0.88) 100%);
-      box-shadow: 0 16px 36px rgb(15 23 42 / 0.1);
-      backdrop-filter: blur(12px);
-      transition: width 0.26s ease, box-shadow 0.26s ease, border-color 0.26s ease;
-      z-index: 20;
-    }
-
-    :global(.dark) .toc-shell {
-      border-color: rgb(75 85 99 / 0.75);
-      background: linear-gradient(165deg, rgb(17 24 39 / 0.93) 0%, rgb(15 23 42 / 0.86) 100%);
-      box-shadow: 0 18px 36px rgb(0 0 0 / 0.36);
-    }
-
-    .toc-shell[data-open='false'] {
-      width: 3.85rem;
-    }
-
-    .toc-toggle {
-      display: flex;
-      width: 100%;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 0.52rem;
-      border: none;
-      border-bottom: 1px solid rgb(209 213 219 / 0.9);
-      background: transparent;
-      color: inherit;
-      font-size: 0.86rem;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      padding: 0.78rem 0.72rem;
-      cursor: pointer;
-      transition: color 0.2s ease, background-color 0.2s ease;
-    }
-
-    :global(.dark) .toc-toggle {
-      border-bottom-color: rgb(75 85 99 / 0.8);
-    }
-
-    .toc-toggle:hover {
-      background: rgb(20 184 166 / 0.08);
-    }
-
-    :global(.dark) .toc-toggle:hover {
-      background: rgb(20 184 166 / 0.14);
-    }
-
-    .toc-toggle-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.72rem;
-      height: 1.72rem;
-      border-radius: 999px;
-      background: rgb(15 118 110 / 0.12);
-      color: rgb(15 118 110);
-      font-size: 1.02rem;
-      transform: rotate(180deg);
-      transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-
-    :global(.dark) .toc-toggle-icon {
-      background: rgb(94 234 212 / 0.18);
-      color: rgb(153 246 228);
-    }
-
-    .toc-shell[data-open='false'] .toc-toggle-icon {
-      transform: rotate(0deg);
-    }
-
-    .toc-toggle-label {
-      white-space: nowrap;
-      max-width: 9rem;
-      opacity: 1;
-      overflow: hidden;
-      transition: max-width 0.2s ease, opacity 0.2s ease;
-    }
-
-    .toc-toggle:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-    .toc-shell[data-open='false'] .toc-toggle {
-      justify-content: center;
-      padding-inline: 0.55rem;
-      border-bottom: none;
-    }
-
-    .toc-shell[data-open='false'] .toc-toggle-label {
-      max-width: 0;
-      opacity: 0;
-    }
-
-    .toc-nav {
-      max-height: calc(100vh - 10rem);
-      overflow: auto;
-      padding: 0.56rem 0.62rem 0.85rem;
-      scrollbar-width: thin;
-      scrollbar-color: rgb(148 163 184 / 0.5) transparent;
-    }
-
-    .toc-shell[data-open='false'] .toc-nav {
-      display: none;
-    }
-
-    .toc-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.18rem;
-    }
-
-    .toc-item {
-      margin: 0;
-    }
-
-    .toc-link {
-      display: block;
-      border-radius: 0.56rem;
-      color: rgb(75 85 99);
-      font-size: 0.88rem;
-      line-height: 1.35;
-      text-decoration: none;
-      padding: 0.42rem 0.46rem 0.42rem calc(0.46rem + var(--toc-indent, 0rem));
-      transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-      border-left: 2px solid transparent;
-    }
-
-    :global(.dark) .toc-link {
-      color: rgb(203 213 225);
-    }
-
-    .toc-link:hover {
-      background: rgb(45 212 191 / 0.17);
-      color: rgb(15 118 110);
-      transform: translateX(2px);
-    }
-
-    :global(.dark) .toc-link:hover {
-      background: rgb(20 184 166 / 0.2);
-      color: rgb(153 246 228);
-    }
-
-    .toc-link.is-active {
-      background: rgb(20 184 166 / 0.2);
-      color: rgb(17 94 89);
-      font-weight: 600;
-      border-left-color: rgb(13 148 136);
-    }
-
-    :global(.dark) .toc-link.is-active {
-      background: rgb(20 184 166 / 0.26);
-      color: rgb(204 251 241);
-      border-left-color: rgb(94 234 212);
-    }
-
-    .toc-empty {
-      margin: 0.35rem 0.45rem;
-      color: rgb(107 114 128);
-      font-size: 0.84rem;
-    }
-
-    :global(.dark) .toc-empty {
-      color: rgb(156 163 175);
-    }
-
-    [data-article-content] :is(h1, h2, h3, h4, h5, h6) {
-      scroll-margin-top: 5.5rem;
-    }
-
-    :global(body.toc-mobile-open) {
-      overflow: hidden;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .toc-shell,
-      .toc-toggle,
-      .toc-toggle-icon,
-      .toc-toggle-label,
-      .toc-link,
-      .toc-fab,
-      .toc-mobile-backdrop {
-        transition: none;
-      }
-    }
-
-    @media (max-width: 1023px) {
-      .article-layout {
-        display: block;
-      }
-
-      .toc-fab {
-        position: fixed;
-        right: 1rem;
-        bottom: 1rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        height: 2.85rem;
-        min-width: 2.85rem;
-        border: none;
-        border-radius: 999px;
-        padding: 0 1rem;
-        background: rgb(15 118 110);
-        color: rgb(240 253 250);
-        font-size: 0.9rem;
-        font-weight: 700;
-        letter-spacing: 0.03em;
-        box-shadow: 0 16px 28px rgb(15 118 110 / 0.32);
-        z-index: 52;
-        cursor: pointer;
-        transition: transform 0.22s ease, opacity 0.22s ease;
-      }
-
-      .toc-fab[aria-expanded='true'] {
-        opacity: 0;
-        transform: translateY(10px) scale(0.95);
-        pointer-events: none;
-      }
-
-      :global(.dark) .toc-fab {
-        background: rgb(13 148 136);
-        color: rgb(236 254 255);
-      }
-
-      .toc-mobile-backdrop {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgb(15 23 42 / 0.42);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.24s ease;
-        z-index: 50;
-      }
-
-      .toc-mobile-backdrop[data-open='true'] {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .toc-shell {
-        position: fixed;
-        left: 0.75rem;
-        right: 0.75rem;
-        bottom: 0.75rem;
-        top: auto;
-        width: auto;
-        max-height: min(75vh, 34rem);
-        z-index: 55;
-        transform: translateY(calc(100% + 1rem));
-        opacity: 0;
-        pointer-events: none;
-        transition: transform 0.26s ease, opacity 0.26s ease;
-      }
-
-      .toc-shell[data-open='false'] {
-        width: auto;
-      }
-
-      .toc-shell[data-open='true'] {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .toc-shell[data-open='false'] .toc-toggle {
-        justify-content: flex-start;
-        border-bottom: 1px solid rgb(209 213 219 / 0.9);
-        padding-inline: 0.72rem;
-      }
-
-      :global(.dark) .toc-shell[data-open='false'] .toc-toggle {
-        border-bottom-color: rgb(75 85 99 / 0.8);
-      }
-
-      .toc-shell[data-open='false'] .toc-toggle-label {
-        max-width: 9rem;
-        opacity: 1;
-      }
-
-      .toc-nav {
-        max-height: min(calc(75vh - 3.35rem), 28rem);
-      }
-    }
-  </style>
 </Layout>
