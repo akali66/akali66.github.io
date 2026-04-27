@@ -4,6 +4,7 @@ title: 初识AI
 description: "用于大致准备AI笔试和面试的一些专业知识点"
 category: ai
 pubDate: 2026-04-17
+secret: true
 ---
 
 # 初识AI
