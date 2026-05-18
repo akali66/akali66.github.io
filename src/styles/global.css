@@ -14,9 +14,48 @@
 
   body {
     @apply bg-white text-gray-900 transition-colors duration-300;
+    overflow-x: clip;
   }
 
   .dark body {
     @apply bg-gray-900 text-gray-100;
+  }
+
+  html {
+    overflow-x: clip;
+  }
+}
+
+@layer components {
+  .article-layout,
+  .article-content,
+  [data-article-content] {
+    min-width: 0;
+  }
+
+  [data-article-content] {
+    overflow-wrap: anywhere;
+  }
+
+  [data-article-content] :where(img, video, canvas, svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  [data-article-content] :where(pre) {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  [data-article-content] :where(pre code) {
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  [data-article-content] :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 }
